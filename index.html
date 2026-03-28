@@ -1,0 +1,2883 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevMastery Pro - Interactive Web Development Academy</title>
+    <style>
+        /* CSS VARIABLES & THEMES */
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff00a0;
+            --accent: #39ff14;
+            --warning: #ffae00;
+            --danger: #ff0055;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a2e;
+            --bg-card: #16162a;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --border-color: #2a2a4a;
+            --glass-bg: rgba(22, 22, 42, 0.8);
+            --glass-border: rgba(0, 240, 255, 0.1);
+            --neon-glow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.3);
+            --neon-glow-secondary: 0 0 10px rgba(255, 0, 160, 0.5), 0 0 20px rgba(255, 0, 160, 0.3);
+        }
+
+        [data-theme="light"] {
+            --primary: #0066cc;
+            --secondary: #cc0066;
+            --accent: #00aa00;
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e8eef4;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --border-color: #cbd5e0;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 102, 204, 0.2);
+            --neon-glow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --neon-glow-secondary: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* ANIMATED BACKGROUND */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 160, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(57, 255, 20, 0.05) 0%, transparent 30%);
+            animation: bgRotate 20s linear infinite;
+        }
+
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* HEADER & NAVIGATION */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo::before {
+            content: '◈';
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle, .menu-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover, .menu-toggle:hover {
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+            transform: translateY(-2px);
+        }
+
+        .theme-toggle::before {
+            content: '☀️';
+            transition: transform 0.5s ease;
+        }
+
+        [data-theme="light"] .theme-toggle::before {
+            content: '🌙';
+            transform: rotate(360deg);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            text-shadow: var(--neon-glow);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CODE EDITOR SECTION */
+        .code-lab {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .section-header h2::before {
+            content: '▹';
+            color: var(--accent);
+            font-size: 2rem;
+        }
+
+        .editor-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .editor-header {
+            background: var(--bg-tertiary);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .editor-tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .editor-tab.active {
+            background: var(--bg-card);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .editor-tab:hover:not(.active) {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .editor-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-run {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+        }
+
+        .btn-clear {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+        }
+
+        .btn-template {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .editor-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+
+        .code-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-input {
+            flex: 1;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: none;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            tab-size: 2;
+        }
+
+        .code-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .preview-panel {
+            background: white;
+            position: relative;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .preview-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin-top: 35px;
+            background: white;
+        }
+
+        .console-panel {
+            grid-column: 1 / -1;
+            background: #0d1117;
+            border-top: 1px solid var(--border-color);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .console-header {
+            padding: 0.75rem 1.5rem;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .console-output {
+            padding: 1rem 1.5rem;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .console-line {
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .console-line.error {
+            color: #ff7b72;
+            background: rgba(255, 0, 85, 0.1);
+            padding: 0.5rem;
+            border-radius: 4px;
+            border-left: 3px solid var(--danger);
+        }
+
+        .console-line.success {
+            color: #7ee787;
+        }
+
+        .console-line.info {
+            color: #79c0ff;
+        }
+
+        /* LEARNING PATH */
+        .learning-path {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .path-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .path-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .path-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), var(--neon-glow);
+        }
+
+        .path-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .path-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .path-card:hover .path-icon {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .path-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .path-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .path-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .path-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 3;
+        }
+
+        .progress-ring .bg {
+            stroke: var(--bg-tertiary);
+        }
+
+        .progress-ring .progress {
+            stroke: var(--primary);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+            filter: drop-shadow(0 0 4px var(--primary));
+        }
+
+        /* MODULE ACCORDION */
+        .module-section {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .module {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .module:hover {
+            border-color: var(--border-color);
+        }
+
+        .module-header {
+            padding: 1.5rem 2rem;
+            background: var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .module:nth-child(1) .module-header:hover { border-left-color: #e34c26; }
+        .module:nth-child(2) .module-header:hover { border-left-color: #264de4; }
+        .module:nth-child(3) .module-header:hover { border-left-color: #f7df1e; }
+
+        .module-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .module-number {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .module:hover .module-number {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: var(--neon-glow);
+        }
+
+        .module-toggle {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .module.active .module-toggle {
+            transform: rotate(180deg);
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        .module-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .module.active .module-content {
+            max-height: 50000px;
+        }
+
+        .lesson {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .lesson-number {
+            width: 30px;
+            height: 30px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .lesson h4 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        /* CODE BLOCKS */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #161b22;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .code-lang {
+            font-size: 0.8rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-lang::before {
+            content: '●';
+            color: var(--accent);
+        }
+
+        .code-copy {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .code-copy:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: #c9d1d9;
+        }
+
+        .code-content .keyword { color: #ff7b72; }
+        .code-content .string { color: #a5d6ff; }
+        .code-content .comment { color: #8b949e; font-style: italic; }
+        .code-content .function { color: #d2a8ff; }
+        .code-content .number { color: #79c0ff; }
+        .code-content .tag { color: #7ee787; }
+        .code-content .attr { color: #79c0ff; }
+
+        /* INTERACTIVE DEMOS */
+        .demo-box {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-box::before {
+            content: 'INTERACTIVE DEMO';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-bottom-left-radius: 8px;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .demo-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .demo-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--neon-glow);
+        }
+
+        .demo-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .demo-slider {
+            width: 200px;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-card);
+            outline: none;
+        }
+
+        .demo-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: var(--neon-glow);
+        }
+
+        /* VISUALIZATIONS */
+        .visual-container {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 2rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .box-model-viz {
+            position: relative;
+            padding: 40px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 2px dashed var(--primary);
+        }
+
+        .box-content {
+            padding: 30px;
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+        }
+
+        .box-label {
+            position: absolute;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .flex-viz {
+            display: flex;
+            gap: 10px;
+            min-height: 150px;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .flex-item-viz {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        /* QUIZ COMPONENT */
+        .quiz-container {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(57, 255, 20, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .quiz-option.wrong {
+            background: rgba(255, 0, 85, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CHEAT SHEET */
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .cheat-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .cheat-card h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cheat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .cheat-item:last-child {
+            border-bottom: none;
+        }
+
+        .cheat-code {
+            font-family: monospace;
+            color: var(--accent);
+            background: var(--bg-card);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .social-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* SELECTION */
+        ::selection {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .editor-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-panel {
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+                min-height: 300px;
+            }
+            
+            .path-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-header {
+                padding: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-stats {
+                gap: 2rem;
+            }
+        }
+
+        /* UTILITY CLASSES */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glow-text {
+            text-shadow: var(--neon-glow);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .badge.primary {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* ANIMATIONS */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TYPING EFFECT */
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* PARTICLES */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: float-up 10s infinite linear;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="logo" onclick="window.scrollTo(0,0)">
+            DevMastery Pro
+        </div>
+        <nav class="nav-controls">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme"></button>
+            <button class="menu-toggle" onclick="scrollToSection('code-lab')" title="Code Lab">💻</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>⚡</span>
+            <span>Interactive Learning Platform</span>
+        </div>
+        <h1 class="typing-effect" id="heroTitle">Master Web Development</h1>
+        <p>Learn HTML5, CSS3, and JavaScript through interactive lessons, live code editing, and hands-on projects. From beginner to professional.</p>
+        
+        <div class="demo-controls" style="margin-top: 2rem;">
+            <button class="demo-btn active" onclick="scrollToSection('code-lab')">
+                <span>🚀</span> Start Coding
+            </button>
+            <button class="demo-btn" onclick="scrollToSection('learning-path')">
+                <span>📚</span> Learning Path
+            </button>
+            <button class="demo-btn" onclick="scrollToSection('modules')">
+                <span>🎯</span> Tutorials
+            </button>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-value" id="stat1">0</span>
+                <span class="stat-label">Lessons</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat2">0</span>
+                <span class="stat-label">Code Examples</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="stat3">0</span>
+                <span class="stat-label">Interactive Demos</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Lab Section -->
+    <section class="code-lab" id="code-lab">
+        <div class="section-header">
+            <h2>Live Code Editor</h2>
+            <p>Write HTML, CSS, and JavaScript code and see the results instantly. Experiment, learn, and build!</p>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-header">
+                <div class="editor-tabs">
+                    <button class="editor-tab active" onclick="switchTab('html')" data-tab="html">
+                        <span>🌐</span> HTML
+                    </button>
+                    <button class="editor-tab" onclick="switchTab('css')" data-tab="css">
+                        <span>🎨</span> CSS
+                    </button>
+                    <button class="editor-tab" onclick="switchTab('js')" data-tab="js">
+                        <span>⚡</span> JavaScript
+                    </button>
+                </div>
+                <div class="editor-actions">
+                    <button class="editor-btn btn-template" onclick="loadTemplate()">
+                        <span>📋</span> Template
+                    </button>
+                    <button class="editor-btn btn-clear" onclick="clearCode()">
+                        <span>🗑️</span> Clear
+                    </button>
+                    <button class="editor-btn btn-run" onclick="runCode()">
+                        <span>▶️</span> Run Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-body">
+                <div class="code-panel">
+                    <textarea class="code-input" id="htmlCode" placeholder="<!-- Write your HTML here -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>Start coding...</p>
+</body>
+</html>"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Awesome Page</title>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Welcome to My Page</h1>
+        <p>This is a live preview of your code!</p>
+        <button onclick="alert('Hello!')">Click Me</button>
+    </div>
+</body>
+</html></textarea>
+                    <textarea class="code-input" id="cssCode" style="display:none;" placeholder="/* Write your CSS here */
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+}">/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+button:active {
+    transform: translateY(-1px);
+}</textarea>
+                    <textarea class="code-input" id="jsCode" style="display:none;" placeholder="// Write your JavaScript here
+console.log('Hello World');
+
+function greet(name) {
+    return 'Hello, ' + name;
+}">// Interactive JavaScript
+console.log('🚀 JavaScript is running!');
+
+// Add click event to button
+document.querySelector('button').addEventListener('click', function() {
+    this.textContent = 'Clicked! 🎉';
+    this.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+    
+    // Create confetti effect
+    createConfetti();
+    
+    setTimeout(() => {
+        this.textContent = 'Click Me';
+        this.style.background = '';
+    }, 2000);
+});
+
+function createConfetti() {
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.borderRadius = '50%';
+        confetti.style.pointerEvents = 'none';
+        confetti.style.zIndex = '9999';
+        document.body.appendChild(confetti);
+        
+        const duration = Math.random() * 3 + 2;
+        confetti.animate([
+            { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+            { transform: `translateY(100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+        ], {
+            duration: duration * 1000,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        }).onfinish = () => confetti.remove();
+    }
+}
+
+// Log page load
+console.log('✨ Page loaded successfully!');
+console.log('📝 Try editing this code and click Run!');</textarea>
+                </div>
+                <div class="preview-panel">
+                    <div class="preview-header">
+                        <span>🌐</span>
+                        <span>Live Preview</span>
+                    </div>
+                    <iframe class="preview-frame" id="previewFrame"></iframe>
+                </div>
+            </div>
+
+            <div class="console-panel">
+                <div class="console-header">
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <span style="color: var(--accent);">●</span> Console Output
+                    </span>
+                    <button class="code-copy" onclick="clearConsole()">Clear Console</button>
+                </div>
+                <div class="console-output" id="consoleOutput">
+                    <div class="console-line info">Ready to run code... Click "Run Code" to start!</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Path -->
+    <section class="learning-path" id="learning-path">
+        <div class="section-header">
+            <h2>Choose Your Path</h2>
+            <p>Select a learning track based on your current skill level and goals</p>
+        </div>
+
+        <div class="path-grid">
+            <div class="path-card" onclick="expandPath('beginner')">
+                <div class="progress-ring">
+                    <svg width="50" height="50">
+                        <circle class="bg" cx="25" cy="25" r="20"></circle>
+                        <circle class="progress" cx="25" cy="25" r="20" 
+                                stroke-dasharray="125.6" 
+                                stroke-dashoffset="94.2"></circle>
+                    </svg>
+                </div>
+                <div class="path-icon">🌱</div>
+                <h3>Beginner Path</h3>
+                <p>Start from zero. Learn the fundamentals of web development including HTML structure, CSS styling, and basic JavaScript programming.</p>
+                <div class="path-meta">
+                    <span>⏱️ 40 hours</span>
+                    <span>📖 25 lessons</span>
+                    <span>🎯 10 projects</span>
+                </div>
+            </div>
+
+            <div class="path-card" onclick="expandPath('intermediate')">
+                <div class="progress-ring">
+                    <svg width="50" height="50">
+                        <circle class="bg" cx="25" cy="25" r="20"></circle>
+                        <circle class="progress" cx="25" cy="25" r="20" 
+                                stroke-dasharray="125.6" 
+                                stroke-dashoffset="125.6"></circle>
+                    </svg>
+                </div>
+                <div class="path-icon">🚀</div>
+                <h3>Intermediate Path</h3>
+                <p>Master responsive design, CSS animations, DOM manipulation, API integration, and modern JavaScript ES6+ features.</p>
+                <div class="path-meta">
+                    <span>⏱️ 60 hours</span>
+                    <span>📖 35 lessons</span>
+                    <span>🎯 15 projects</span>
+                </div>
+            </div>
+
+            <div class="path-card" onclick="expandPath('advanced')">
+                <div class="progress-ring">
+                    <svg width="50" height="50">
+                        <circle class="bg" cx="25" cy="25" r="20"></circle>
+                        <circle class="progress" cx="25" cy="25" r="20" 
+                                stroke-dasharray="125.6" 
+                                stroke-dashoffset="125.6"></circle>
+                    </svg>
+                </div>
+                <div class="path-icon">👑</div>
+                <h3>Advanced Path</h3>
+                <p>Deep dive into performance optimization, accessibility, design patterns, testing, and building production-ready applications.</p>
+                <div class="path-meta">
+                    <span>⏱️ 80 hours</span>
+                    <span>📖 30 lessons</span>
+                    <span>🎯 12 projects</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Modules -->
+    <section class="module-section" id="modules">
+        
+        <!-- HTML5 Module -->
+        <div class="module" id="html-module">
+            <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-title">
+                    <div class="module-number" style="color: #e34c26;">01</div>
+                    <div>
+                        <h3>HTML5 Mastery</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">Structure & Semantics</p>
+                    </div>
+                </div>
+                <div class="module-toggle">▼</div>
+            </div>
+            <div class="module-content">
+                
+                <!-- Lesson 1 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">1</div>
+                        <h4>Document Structure & Metadata</h4>
+                    </div>
+                    <p>Every HTML document follows a specific structure. Understanding this foundation is crucial for SEO, accessibility, and browser compatibility.</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">HTML5 Boilerplate</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">&lt;!-- HTML5 Document Structure --&gt;</span>
+<span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="string">"en"</span> <span class="attr">dir</span>=<span class="string">"ltr"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+    <span class="comment">&lt;!-- Character Encoding - Must be first --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- Viewport for Responsive Design --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> 
+          <span class="attr">content</span>=<span class="string">"width=device-width, initial-scale=1.0, maximum-scale=5.0"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- SEO Meta Tags --&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Page Title | Site Name<span class="tag">&lt;/title&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"Page description for search engines"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"keywords"</span> <span class="attr">content</span>=<span class="string">"html, css, javascript"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"author"</span> <span class="attr">content</span>=<span class="string">"Your Name"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- Open Graph (Social Media) --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="string">"og:title"</span> <span class="attr">content</span>=<span class="string">"Page Title"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="string">"og:description"</span> <span class="attr">content</span>=<span class="string">"Description"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="string">"og:image"</span> <span class="attr">content</span>=<span class="string">"https://example.com/image.jpg"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- Favicon --&gt;</span>
+    <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="string">"icon"</span> <span class="attr">type</span>=<span class="string">"image/x-icon"</span> <span class="attr">href</span>=<span class="string">"/favicon.ico"</span><span class="tag">&gt;</span>
+    
+    <span class="comment">&lt;!-- Stylesheets --&gt;</span>
+    <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"styles.css"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;!-- Content goes here --&gt;</span>
+    
+    <span class="comment">&lt;!-- Scripts at end for performance --&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"app.js"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></div>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>🎯 Try It: Meta Tag Generator</h5>
+                        <div class="demo-controls">
+                            <input type="text" id="metaTitle" placeholder="Page Title" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary);">
+                            <input type="text" id="metaDesc" placeholder="Description" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary);">
+                            <button class="demo-btn" onclick="generateMeta()">Generate Meta Tags</button>
+                        </div>
+                        <div class="code-block" id="metaOutput" style="display:none; margin-top: 1rem;">
+                            <div class="code-content"></div>
+                        </div>
+                    </div>
+
+                    <div class="cheat-grid">
+                        <div class="cheat-card">
+                            <h5>📋 Essential Meta Tags</h5>
+                            <div class="cheat-item">
+                                <span>Charset</span>
+                                <span class="cheat-code">UTF-8</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Viewport</span>
+                                <span class="cheat-code">device-width</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Description</span>
+                                <span class="cheat-code">150-160 chars</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Robots</span>
+                                <span class="cheat-code">index, follow</span>
+                            </div>
+                        </div>
+                        <div class="cheat-card">
+                            <h5>🔍 SEO Checklist</h5>
+                            <div class="cheat-item">
+                                <span>Unique title per page</span>
+                                <span class="cheat-code">✓</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>One H1 per page</span>
+                                <span class="cheat-code">✓</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Alt text for images</span>
+                                <span class="cheat-code">✓</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Semantic HTML</span>
+                                <span class="cheat-code">✓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">2</div>
+                        <h4>Semantic HTML5 Elements</h4>
+                    </div>
+                    <p>Semantic elements clearly describe their meaning to both the browser and developer. They improve accessibility, SEO, and code readability.</p>
+
+                    <div class="visual-container" style="flex-direction: column; gap: 1rem;">
+                        <div style="width: 100%; max-width: 600px; background: var(--bg-card); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                            <div style="background: #e34c26; color: white; padding: 1rem; text-align: center; margin-bottom: 1rem; border-radius: 8px; font-weight: bold;">&lt;header&gt; - Logo, Nav</div>
+                            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem;">
+                                <div style="background: #264de4; color: white; padding: 2rem 1rem; text-align: center; border-radius: 8px; font-weight: bold; min-height: 200px;">&lt;aside&gt; - Sidebar</div>
+                                <div style="background: #f7df1e; color: #000; padding: 1rem; border-radius: 8px; font-weight: bold;">
+                                    <div style="margin-bottom: 1rem;">&lt;main&gt;</div>
+                                    <div style="background: var(--bg-primary); color: var(--text-primary); padding: 1rem; border-radius: 4px; margin-bottom: 0.5rem;">&lt;article&gt;</div>
+                                    <div style="background: var(--bg-primary); color: var(--text-primary); padding: 1rem; border-radius: 4px;">&lt;section&gt;</div>
+                                </div>
+                            </div>
+                            <div style="background: #e34c26; color: white; padding: 1rem; text-align: center; margin-top: 1rem; border-radius: 8px; font-weight: bold;">&lt;footer&gt; - Copyright, Links</div>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Semantic Layout</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;header&gt;</span>
+    <span class="tag">&lt;nav</span> <span class="attr">aria-label</span>=<span class="string">"Main Navigation"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;ul&gt;</span>
+        <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="string">"/"</span> <span class="attr">aria-current</span>=<span class="string">"page"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+        <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="string">"/about"</span><span class="tag">&gt;</span>About<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  <span class="tag">&lt;/header&gt;</span>
+
+  <span class="tag">&lt;main&gt;</span>
+    <span class="tag">&lt;article&gt;</span>
+      <span class="tag">&lt;header&gt;</span>
+        <span class="tag">&lt;h1&gt;</span>Article Title<span class="tag">&lt;/h1&gt;</span>
+        <span class="tag">&lt;time</span> <span class="attr">datetime</span>=<span class="string">"2024-03-28"</span><span class="tag">&gt;</span>March 28, 2024<span class="tag">&lt;/time&gt;</span>
+      <span class="tag">&lt;/header&gt;</span>
+      
+      <span class="tag">&lt;section</span> <span class="attr">aria-labelledby</span>=<span class="string">"intro-heading"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h2</span> <span class="attr">id</span>=<span class="string">"intro-heading"</span><span class="tag">&gt;</span>Introduction<span class="tag">&lt;/h2&gt;</span>
+        <span class="tag">&lt;p&gt;</span>Content here...<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/section&gt;</span>
+      
+      <span class="tag">&lt;figure&gt;</span>
+        <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="string">"photo.jpg"</span> <span class="attr">alt</span>=<span class="string">"Descriptive text"</span> <span class="attr">loading</span>=<span class="string">"lazy"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;figcaption&gt;</span>Image caption<span class="tag">&lt;/figcaption&gt;</span>
+      <span class="tag">&lt;/figure&gt;</span>
+    <span class="tag">&lt;/article&gt;</span>
+
+    <span class="tag">&lt;aside&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>Related Links<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;ul&gt;</span>
+        <span class="tag">&lt;li&gt;&lt;a</span> <span class="attr">href</span>=<span class="string">"#"</span><span class="tag">&gt;</span>Related article<span class="tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/aside&gt;</span>
+  <span class="tag">&lt;/main&gt;</span>
+
+  <span class="tag">&lt;footer&gt;</span>
+    <span class="tag">&lt;p&gt;</span>&copy; 2024 Company Name<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;address&gt;</span>
+      Contact: <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="string">"mailto:info@example.com"</span><span class="tag">&gt;</span>info@example.com<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;/address&gt;</span>
+  <span class="tag">&lt;/footer&gt;</span>
+<span class="tag">&lt;/body&gt;</span></div>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>🧠 Quick Quiz</h5>
+                        <p>Which element should contain the main navigation links?</p>
+                        <button class="quiz-option" onclick="checkAnswer(this, false)">&lt;header&gt;</button>
+                        <button class="quiz-option" onclick="checkAnswer(this, true)">&lt;nav&gt;</button>
+                        <button class="quiz-option" onclick="checkAnswer(this, false)">&lt;menu&gt;</button>
+                        <div class="quiz-feedback" id="quiz1"></div>
+                    </div>
+                </div>
+
+                <!-- Lesson 3 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">3</div>
+                        <h4>Forms & Validation</h4>
+                    </div>
+                    
+                    <div class="demo-box">
+                        <h5>🎮 Interactive Form Builder</h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div>
+                                <div class="demo-controls" style="flex-direction: column; align-items: stretch;">
+                                    <label style="display: flex; flex-direction: column; gap: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                        Input Type:
+                                        <select id="inputType" onchange="updateFormPreview()" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary);">
+                                            <option value="text">Text</option>
+                                            <option value="email">Email</option>
+                                            <option value="password">Password</option>
+                                            <option value="number">Number</option>
+                                            <option value="tel">Telephone</option>
+                                            <option value="date">Date</option>
+                                            <option value="color">Color</option>
+                                            <option value="range">Range</option>
+                                        </select>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;">
+                                        <input type="checkbox" id="requiredCheck" onchange="updateFormPreview()"> Required
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); cursor: pointer;">
+                                        <input type="checkbox" id="disabledCheck" onchange="updateFormPreview()"> Disabled
+                                    </label>
+                                </div>
+                            </div>
+                            <div style="background: white; padding: 2rem; border-radius: 8px; color: #333;">
+                                <div id="formPreview"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Advanced Form</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="string">"/submit"</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">novalidate</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span><span class="tag">&gt;</span>
+  
+  <span class="comment">&lt;!-- Fieldset groups related controls --&gt;</span>
+  <span class="tag">&lt;fieldset&gt;</span>
+    <span class="tag">&lt;legend&gt;</span>Personal Information<span class="tag">&lt;/legend&gt;</span>
+    
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"form-group"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="string">"email"</span><span class="tag">&gt;</span>Email <span class="tag">&lt;span</span> <span class="attr">aria-label</span>=<span class="string">"required"</span><span class="tag">&gt;</span>*<span class="tag">&lt;/span&gt;&lt;/label&gt;</span>
+      <span class="tag">&lt;input</span> 
+        <span class="attr">type</span>=<span class="string">"email"</span> 
+        <span class="attr">id</span>=<span class="string">"email"</span> 
+        <span class="attr">name</span>=<span class="string">"email"</span>
+        <span class="attr">required</span>
+        <span class="attr">placeholder</span>=<span class="string">"you@example.com"</span>
+        <span class="attr">pattern</span>=<span class="string">"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"</span>
+        <span class="attr">title</span>=<span class="string">"Please enter a valid email address"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="string">"error-message"</span><span class="tag">&gt;&lt;/span&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"form-group"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="string">"password"</span><span class="tag">&gt;</span>Password<span class="tag">&lt;/label&gt;</span>
+      <span class="tag">&lt;input</span> 
+        <span class="attr">type</span>=<span class="string">"password"</span> 
+        <span class="attr">id</span>=<span class="string">"password"</span> 
+        <span class="attr">name</span>=<span class="string">"password"</span>
+        <span class="attr">minlength</span>=<span class="string">"8"</span>
+        <span class="attr">pattern</span>=<span class="string">"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"</span>
+        <span class="attr">title</span>=<span class="string">"Must contain at least one number, one uppercase and lowercase letter, and at least 8 characters"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/fieldset&gt;</span>
+
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"submit"</span><span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="string">"reset"</span><span class="tag">&gt;</span>Clear<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CSS3 Module -->
+        <div class="module" id="css-module">
+            <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-title">
+                    <div class="module-number" style="color: #264de4;">02</div>
+                    <div>
+                        <h3>CSS3 Advanced</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">Styling, Layout & Animation</p>
+                    </div>
+                </div>
+                <div class="module-toggle">▼</div>
+            </div>
+            <div class="module-content">
+                
+                <!-- Lesson 1 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">1</div>
+                        <h4>Modern CSS Layout: Flexbox & Grid</h4>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>🎨 Flexbox Playground</h5>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="updateFlex('direction', 'row')">Row</button>
+                            <button class="demo-btn" onclick="updateFlex('direction', 'column')">Column</button>
+                            <button class="demo-btn" onclick="updateFlex('justify', 'flex-start')">Start</button>
+                            <button class="demo-btn" onclick="updateFlex('justify', 'center')">Center</button>
+                            <button class="demo-btn" onclick="updateFlex('justify', 'space-between')">Space Between</button>
+                            <button class="demo-btn" onclick="updateFlex('align', 'center')">Align Center</button>
+                            <button class="demo-btn" onclick="updateFlex('wrap', 'wrap')">Wrap</button>
+                        </div>
+                        <div class="flex-viz" id="flexPlayground" style="min-height: 200px; border: 2px dashed var(--primary);">
+                            <div class="flex-item-viz" style="min-width: 100px;">1</div>
+                            <div class="flex-item-viz" style="min-width: 100px;">2</div>
+                            <div class="flex-item-viz" style="min-width: 100px;">3</div>
+                            <div class="flex-item-viz" style="min-width: 100px;">4</div>
+                        </div>
+                    </div>
+
+                    <div class="demo-box" style="margin-top: 2rem;">
+                        <h5>🔲 CSS Grid Builder</h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div>
+                                <div class="demo-controls" style="flex-direction: column; align-items: stretch;">
+                                    <label style="color: var(--text-secondary);">
+                                        Columns: <input type="range" min="1" max="4" value="2" class="demo-slider" oninput="updateGrid(this, 'columns')">
+                                    </label>
+                                    <label style="color: var(--text-secondary);">
+                                        Gap: <input type="range" min="0" max="40" value="10" class="demo-slider" oninput="updateGrid(this, 'gap')">
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="gridPlayground" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; min-height: 200px;">
+                                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold;">1</div>
+                                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold;">2</div>
+                                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold;">3</div>
+                                <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold;">4</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Modern Layout</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">/* CSS Grid Holy Grail Layout */</span>
+<span class="selector">.container</span> {
+  <span class="attr">display</span>: <span class="string">grid</span>;
+  <span class="attr">grid-template-columns</span>: <span class="string">200px 1fr 200px</span>;
+  <span class="attr">grid-template-rows</span>: <span class="string">auto 1fr auto</span>;
+  <span class="attr">grid-template-areas</span>:
+    <span class="string">"header header header"</span>
+    <span class="string">"sidebar main aside"</span>
+    <span class="string">"footer footer footer"</span>;
+  <span class="attr">gap</span>: <span class="number">20px</span>;
+  <span class="attr">min-height</span>: <span class="number">100vh</span>;
+}
+
+<span class="selector">header</span> { <span class="attr">grid-area</span>: <span class="string">header</span>; }
+<span class="selector">.sidebar</span> { <span class="attr">grid-area</span>: <span class="string">sidebar</span>; }
+<span class="selector">main</span> { <span class="attr">grid-area</span>: <span class="string">main</span>; }
+<span class="selector">aside</span> { <span class="attr">grid-area</span>: <span class="string">aside</span>; }
+<span class="selector">footer</span> { <span class="attr">grid-area</span>: <span class="string">footer</span>; }
+
+<span class="comment">/* Responsive: Stack on mobile */</span>
+<span class="keyword">@media</span> (<span class="attr">max-width</span>: <span class="number">768px</span>) {
+  <span class="selector">.container</span> {
+    <span class="attr">grid-template-columns</span>: <span class="number">1fr</span>;
+    <span class="attr">grid-template-areas</span>:
+      <span class="string">"header"</span>
+      <span class="string">"main"</span>
+      <span class="string">"sidebar"</span>
+      <span class="string">"aside"</span>
+      <span class="string">"footer"</span>;
+  }
+}</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">2</div>
+                        <h4>Advanced Animations & Effects</h4>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>✨ Animation Studio</h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+                            <div class="demo-controls" style="flex-direction: column; align-items: stretch;">
+                                <button class="demo-btn" onclick="playAnimation('bounce')">Bounce</button>
+                                <button class="demo-btn" onclick="playAnimation('shake')">Shake</button>
+                                <button class="demo-btn" onclick="playAnimation('pulse')">Pulse</button>
+                                <button class="demo-btn" onclick="playAnimation('spin')">Spin</button>
+                                <button class="demo-btn" onclick="playAnimation('flip')">Flip</button>
+                            </div>
+                            <div style="display: flex; justify-content: center; align-items: center; min-height: 200px; background: var(--bg-primary); border-radius: 12px;">
+                                <div id="animBox" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                                    🚀
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Advanced Animations</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">/* Glassmorphism Effect */</span>
+<span class="selector">.glass</span> {
+  <span class="attr">background</span>: <span class="function">rgba</span>(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">0.1</span>);
+  <span class="attr">backdrop-filter</span>: <span class="function">blur</span>(<span class="number">10px</span>);
+  <span class="attr">border</span>: <span class="number">1px</span> <span class="string">solid</span> <span class="function">rgba</span>(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">0.2</span>);
+  <span class="attr">box-shadow</span>: <span class="number">0</span> <span class="number">8px</span> <span class="number">32px</span> <span class="number">0</span> <span class="function">rgba</span>(<span class="number">31</span>, <span class="number">38</span>, <span class="number">135</span>, <span class="number">0.37</span>);
+}
+
+<span class="comment">/* Neon Glow Animation */</span>
+<span class="keyword">@keyframes</span> <span class="function">neon</span> {
+  <span class="number">0%</span>, <span class="number">100%</span> {
+    <span class="attr">box-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">5px</span> <span class="attr">#fff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="attr">#fff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="attr">#ff00de</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="attr">#ff00de</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">80px</span> <span class="attr">#ff00de</span>;
+  }
+  <span class="number">50%</span> {
+    <span class="attr">box-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">5px</span> <span class="attr">#fff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="attr">#fff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="attr">#00ffff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="attr">#00ffff</span>,
+                <span class="number">0</span> <span class="number">0</span> <span class="number">80px</span> <span class="attr">#00ffff</span>;
+  }
+}
+
+<span class="comment">/* Scroll Snap */</span>
+<span class="selector">.carousel</span> {
+  <span class="attr">display</span>: <span class="string">flex</span>;
+  <span class="attr">overflow-x</span>: <span class="string">auto</span>;
+  <span class="attr">scroll-snap-type</span>: <span class="string">x mandatory</span>;
+  <span class="attr">-webkit-overflow-scrolling</span>: <span class="string">touch</span>;
+}
+
+<span class="selector">.carousel-item</span> {
+  <span class="attr">scroll-snap-align</span>: <span class="string">start</span>;
+  <span class="attr">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">100%</span>;
+}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- JavaScript Module -->
+        <div class="module" id="js-module">
+            <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-title">
+                    <div class="module-number" style="color: #f7df1e;">03</div>
+                    <div>
+                        <h3>JavaScript Pro</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">Programming & Interactivity</p>
+                    </div>
+                </div>
+                <div class="module-toggle">▼</div>
+            </div>
+            <div class="module-content">
+                
+                <!-- Lesson 1 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">1</div>
+                        <h4>Modern JavaScript (ES6+)</h4>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>⚡ Live Code Executor</h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <textarea id="jsExecutor" style="width: 100%; min-height: 150px; background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; font-family: monospace; resize: vertical;" placeholder="// Write JavaScript here
+const greeting = 'Hello';
+const name = 'World';
+console.log(`${greeting}, ${name}!`);
+
+// Try array methods
+const nums = [1, 2, 3, 4, 5];
+const doubled = nums.map(n => n * 2);
+console.log(doubled);">// Write JavaScript here
+const greeting = 'Hello';
+const name = 'World';
+console.log(`${greeting}, ${name}!`);
+
+// Try array methods
+const nums = [1, 2, 3, 4, 5];
+const doubled = nums.map(n => n * 2);
+console.log(doubled);</textarea>
+                            <div style="background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 13px; overflow-y: auto; max-height: 200px;">
+                                <div style="color: #8b949e; margin-bottom: 0.5rem;">// Output:</div>
+                                <div id="jsOutput" style="color: #7ee787;"></div>
+                            </div>
+                        </div>
+                        <button class="demo-btn" onclick="executeJS()" style="margin-top: 1rem;">▶ Run Code</button>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">ES6+ Features</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">// Destructuring</span>
+<span class="keyword">const</span> { <span class="attr">name</span>, <span class="attr">age</span>, <span class="attr">email</span> = <span class="string">'N/A'</span> } = user;
+<span class="keyword">const</span> [first, ...rest] = array;
+
+<span class="comment">// Spread Operator</span>
+<span class="keyword">const</span> newArray = [...oldArray, <span class="string">'new item'</span>];
+<span class="keyword">const</span> newObj = { ...oldObj, <span class="attr">newProp</span>: <span class="string">'value'</span> };
+
+<span class="comment">// Optional Chaining</span>
+<span class="keyword">const</span> userCity = user?.address?.city ?? <span class="string">'Unknown'</span>;
+
+<span class="comment">// Dynamic Imports</span>
+<span class="keyword">const</span> module = <span class="keyword">await</span> <span class="function">import</span>(<span class="string">'./module.js'</span>);
+
+<span class="comment">// Class Fields & Private Methods</span>
+<span class="keyword">class</span> <span class="function">User</span> {
+  #privateField = <span class="number">0</span>;  <span class="comment">// Private</span>
+  static <span class="attr">count</span> = <span class="number">0</span>;      <span class="comment">// Static</span>
+  
+  <span class="function">constructor</span>(name) {
+    <span class="keyword">this</span>.name = name;
+    User.count++;
+  }
+  
+  #<span class="function">privateMethod</span>() {
+    <span class="keyword">return</span> <span class="keyword">this</span>.#privateField;
+  }
+}</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">2</div>
+                        <h4>Async JavaScript & APIs</h4>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>🌐 API Fetch Demo</h5>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="fetchData('users')">Fetch Users</button>
+                            <button class="demo-btn" onclick="fetchData('posts')">Fetch Posts</button>
+                            <button class="demo-btn" onclick="fetchData('photos')">Fetch Photos</button>
+                        </div>
+                        <div id="apiOutput" style="margin-top: 1rem; max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Async Patterns</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">// Modern Async/Await with Error Handling</span>
+<span class="keyword">async function</span> <span class="function">fetchUserData</span>(userId) {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> controller = <span class="keyword">new</span> <span class="function">AbortController</span>();
+    <span class="keyword">const</span> timeoutId = <span class="function">setTimeout</span>(() => controller.<span class="function">abort</span>(), <span class="number">5000</span>);
+    
+    <span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">`/api/users/${userId}`</span>, {
+      <span class="attr">signal</span>: controller.signal,
+      <span class="attr">headers</span>: {
+        <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>,
+        <span class="string">'Authorization'</span>: <span class="string">`Bearer ${token}`</span>
+      }
+    });
+    
+    <span class="function">clearTimeout</span>(timeoutId);
+    
+    <span class="keyword">if</span> (!response.ok) {
+      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="function">Error</span>(<span class="string">`HTTP ${response.status}: ${response.statusText}`</span>);
+    }
+    
+    <span class="keyword">const</span> data = <span class="keyword">await</span> response.<span class="function">json</span>();
+    <span class="keyword">return</span> data;
+    
+  } <span class="keyword">catch</span> (error) {
+    <span class="keyword">if</span> (error.name === <span class="string">'AbortError'</span>) {
+      <span class="keyword">console</span>.<span class="function">error</span>(<span class="string">'Request timeout'</span>);
+    } <span class="keyword">else</span> {
+      <span class="keyword">console</span>.<span class="function">error</span>(<span class="string">'Fetch error:'</span>, error);
+    }
+    <span class="keyword">throw</span> error;
+  }
+}
+
+<span class="comment">// Promise.all for parallel requests</span>
+<span class="keyword">const</span> [users, posts, comments] = <span class="keyword">await</span> <span class="attr">Promise</span>.<span class="function">all</span>([
+  <span class="function">fetch</span>(<span class="string">'/api/users'</span>),
+  <span class="function">fetch</span>(<span class="string">'/api/posts'</span>),
+  <span class="function">fetch</span>(<span class="string">'/api/comments'</span>)
+]).<span class="function">then</span>(responses => 
+  <span class="attr">Promise</span>.<span class="function">all</span>(responses.<span class="function">map</span>(r => r.<span class="function">json</span>()))
+);</div>
+                    </div>
+                </div>
+
+                <!-- Lesson 3 -->
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">3</div>
+                        <h4>DOM Manipulation & Events</h4>
+                    </div>
+
+                    <div class="demo-box">
+                        <h5>🎯 DOM Manipulation Playground</h5>
+                        <div id="domPlayground" style="background: white; color: #333; padding: 2rem; border-radius: 8px; min-height: 200px; margin-bottom: 1rem;">
+                            <h3 id="domTitle">Hello DOM!</h3>
+                            <p class="dom-text">This is a paragraph.</p>
+                            <ul id="domList">
+                                <li>Item 1</li>
+                                <li>Item 2</li>
+                            </ul>
+                        </div>
+                        <div class="demo-controls">
+                            <button class="demo-btn" onclick="domAction('changeText')">Change Text</button>
+                            <button class="demo-btn" onclick="domAction('addItem')">Add Item</button>
+                            <button class="demo-btn" onclick="domAction('toggleClass')">Toggle Class</button>
+                            <button class="demo-btn" onclick="domAction('changeColor')">Change Color</button>
+                            <button class="demo-btn btn-clear" onclick="domAction('reset')">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-lang">Modern DOM</span>
+                            <button class="code-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <div class="code-content"><span class="comment">// Selecting Elements</span>
+<span class="keyword">const</span> element = <span class="keyword">document</span>.<span class="function">querySelector</span>(<span class="string">'.class'</span>);
+<span class="keyword">const</span> elements = <span class="keyword">document</span>.<span class="function">querySelectorAll</span>(<span class="string">'.item'</span>); <span class="comment">// Returns NodeList</span>
+
+<span class="comment">// Creating Elements</span>
+<span class="keyword">const</span> div = <span class="keyword">document</span>.<span class="function">createElement</span>(<span class="string">'div'</span>);
+div.<span class="attr">className</span> = <span class="string">'container'</span>;
+div.<span class="attr">id</span> = <span class="string">`item-${Date.now()}`</span>;
+div.<span class="attr">dataset</span>.<span class="attr">id</span> = <span class="string">'123'</span>; <span class="comment">// data-id="123"</span>
+
+<span class="comment">// Modern insertion methods</span>
+parent.<span class="function">append</span>(child, <span class="string">'text'</span>);      <span class="comment">// Append to end</span>
+parent.<span class="function">prepend</span>(child);               <span class="comment">// Insert at beginning</span>
+element.<span class="function">before</span>(sibling);            <span class="comment">// Insert before</span>
+element.<span class="function">after</span>(sibling);             <span class="comment">// Insert after</span>
+element.<span class="function">replaceWith</span>(newElement);      <span class="comment">// Replace element</span>
+element.<span class="function">remove</span>();                     <span class="comment">// Remove element</span>
+
+<span class="comment">// Event Delegation (Performance)</span>
+<span class="keyword">document</span>.<span class="function">getElementById</span>(<span class="string">'list'</span>).<span class="function">addEventListener</span>(<span class="string">'click'</span>, (e) => {
+  <span class="keyword">if</span> (e.target.<span class="attr">matches</span>(<span class="string">'li.item'</span>)) {
+    <span class="keyword">console</span>.<span class="function">log</span>(<span class="string">'Clicked:'</span>, e.target.<span class="attr">textContent</span>);
+  }
+});
+
+<span class="comment">// Intersection Observer (Lazy Loading)</span>
+<span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="function">IntersectionObserver</span>((entries) => {
+  entries.<span class="function">forEach</span>(entry => {
+    <span class="keyword">if</span> (entry.isIntersecting) {
+      entry.target.<span class="attr">src</span> = entry.target.<span class="attr">dataset</span>.<span class="attr">src</span>;
+      observer.<span class="function">unobserve</span>(entry.target);
+    }
+  });
+});
+
+<span class="keyword">document</span>.<span class="function">querySelectorAll</span>(<span class="string">'img[data-src]'</span>).<span class="function">forEach</span>(img => observer.<span class="function">observe</span>(img));</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Advanced Topics Module -->
+        <div class="module" id="advanced-module">
+            <div class="module-header" onclick="toggleModule(this)">
+                <div class="module-title">
+                    <div class="module-number" style="color: var(--accent);">04</div>
+                    <div>
+                        <h3>Advanced Topics</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">Performance, Accessibility & Tools</p>
+                    </div>
+                </div>
+                <div class="module-toggle">▼</div>
+            </div>
+            <div class="module-content">
+                
+                <div class="lesson">
+                    <div class="lesson-header">
+                        <div class="lesson-number">1</div>
+                        <h4>Web Performance Optimization</h4>
+                    </div>
+
+                    <div class="cheat-grid">
+                        <div class="cheat-card">
+                            <h5>🚀 Loading Performance</h5>
+                            <div class="cheat-item">
+                                <span>Lazy load images</span>
+                                <span class="cheat-code">loading="lazy"</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Preload critical</span>
+                                <span class="cheat-code">&lt;link rel="preload"&gt;</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Defer non-critical JS</span>
+                                <span class="cheat-code">defer/async</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Minimize CSS</span>
+                                <span class="cheat-code">purgecss</span>
+                            </div>
+                        </div>
+                        <div class="cheat-card">
+                            <h5>⚡ Runtime Performance</h5>
+                            <div class="cheat-item">
+                                <span>Avoid layout thrashing</span>
+                                <span class="cheat-code">read batch, write batch</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Use transform/opacity</span>
+                                <span class="cheat-code">GPU accelerated</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Debounce scroll/resize</span>
+                                <span class="cheat-code">lodash/debounce</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Virtualize long lists</span>
+                                <span class="cheat-code">react-window</span>
+                            </div>
+                        </div>
+                        <div class="cheat-card">
+                            <h5>♿ Accessibility (a11y)</h5>
+                            <div class="cheat-item">
+                                <span>Semantic HTML</span>
+                                <span class="cheat-code">&lt;main&gt;, &lt;nav&gt;</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>ARIA labels</span>
+                                <span class="cheat-code">aria-label</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Focus management</span>
+                                <span class="cheat-code">tabindex</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Color contrast</span>
+                                <span class="cheat-code">WCAG 4.5:1</span>
+                            </div>
+                        </div>
+                        <div class="cheat-card">
+                            <h5>🛠️ Developer Tools</h5>
+                            <div class="cheat-item">
+                                <span>Version Control</span>
+                                <span class="cheat-code">Git</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Package Manager</span>
+                                <span class="cheat-code">npm/yarn/pnpm</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Bundler</span>
+                                <span class="cheat-code">Vite/Webpack</span>
+                            </div>
+                            <div class="cheat-item">
+                                <span>Testing</span>
+                                <span class="cheat-code">Jest/Cypress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <h3 class="text-gradient">Keep Coding, Keep Learning</h3>
+            <p style="color: var(--text-secondary); margin: 1rem 0;">Web development is a journey. Practice daily, build projects, and never stop learning.</p>
+            
+            <div class="social-links">
+                <a href="#" class="social-link" title="GitHub">⚡</a>
+                <a href="#" class="social-link" title="Twitter">🐦</a>
+                <a href="#" class="social-link" title="Discord">💬</a>
+                <a href="#" class="social-link" title="YouTube">▶️</a>
+            </div>
+
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                Built with ❤️ for aspiring developers | &copy; 2024 DevMastery Pro
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Smooth scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Module Toggle
+        function toggleModule(header) {
+            const module = header.parentElement;
+            const wasActive = module.classList.contains('active');
+            
+            // Close all modules
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+            
+            // Open clicked if wasn't active
+            if (!wasActive) {
+                module.classList.add('active');
+            }
+        }
+
+        // Code Editor Tabs
+        function switchTab(lang) {
+            // Update tabs
+            document.querySelectorAll('.editor-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === lang);
+            });
+            
+            // Update content
+            ['html', 'css', 'js'].forEach(l => {
+                document.getElementById(l + 'Code').style.display = l === lang ? 'block' : 'none';
+            });
+        }
+
+        // Run Code
+        function runCode() {
+            const html = document.getElementById('htmlCode').value;
+            const css = document.getElementById('cssCode').value;
+            const js = document.getElementById('jsCode').value;
+            
+            const consoleOutput = document.getElementById('consoleOutput');
+            consoleOutput.innerHTML = '';
+            
+            // Capture console logs
+            const logs = [];
+            const mockConsole = {
+                log: (...args) => {
+                    logs.push({ type: 'log', data: args });
+                    updateConsole();
+                },
+                error: (...args) => {
+                    logs.push({ type: 'error', data: args });
+                    updateConsole();
+                },
+                warn: (...args) => {
+                    logs.push({ type: 'warn', data: args });
+                    updateConsole();
+                }
+            };
+            
+            function updateConsole() {
+                consoleOutput.innerHTML = logs.map(log => {
+                    const content = log.data.map(arg => 
+                        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                    ).join(' ');
+                    
+                    const className = log.type === 'error' ? 'error' : log.type === 'warn' ? 'info' : 'success';
+                    const icon = log.type === 'error' ? '❌' : log.type === 'warn' ? '⚠️' : '✓';
+                    
+                    return `<div class="console-line ${className}">${icon} ${content}</div>`;
+                }).join('');
+            }
+            
+            // Create iframe content
+            const frame = document.getElementById('previewFrame');
+            const frameDoc = frame.contentDocument || frame.contentWindow.document;
+            
+            const wrappedJS = `
+                try {
+                    const console = {
+                        log: function(...args) {
+                            window.parent.postMessage({type: 'console', method: 'log', args: args}, '*');
+                        },
+                        error: function(...args) {
+                            window.parent.postMessage({type: 'console', method: 'error', args: args}, '*');
+                        },
+                        warn: function(...args) {
+                            window.parent.postMessage({type: 'console', method: 'warn', args: args}, '*');
+                        }
+                    };
+                    ${js}
+                } catch (e) {
+                    window.parent.postMessage({type: 'console', method: 'error', args: [e.message]}, '*');
+                }
+            `;
+            
+            const content = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html}
+                    <script>${wrappedJS}<\/script>
+                </body>
+                </html>
+            `;
+            
+            frameDoc.open();
+            frameDoc.write(content);
+            frameDoc.close();
+            
+            // Listen for messages from iframe
+            window.addEventListener('message', (e) => {
+                if (e.data.type === 'console') {
+                    mockConsole[e.data.method](...e.data.args);
+                }
+            });
+            
+            // Add success message
+            setTimeout(() => {
+                if (logs.length === 0) {
+                    consoleOutput.innerHTML = '<div class="console-line success">✓ Code executed successfully (no console output)</div>';
+                }
+            }, 100);
+        }
+
+        // Clear Code
+        function clearCode() {
+            document.getElementById('htmlCode').value = '';
+            document.getElementById('cssCode').value = '';
+            document.getElementById('jsCode').value = '';
+            document.getElementById('consoleOutput').innerHTML = '<div class="console-line info">Code cleared. Ready for new input...</div>';
+            document.getElementById('previewFrame').srcdoc = '';
+        }
+
+        // Clear Console
+        function clearConsole() {
+            document.getElementById('consoleOutput').innerHTML = '';
+        }
+
+        // Load Template
+        function loadTemplate() {
+            document.getElementById('htmlCode').value = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Awesome Page</title>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Welcome to My Page</h1>
+        <p>This is a live preview of your code!</p>
+        <button onclick="alert('Hello!')">Click Me</button>
+    </div>
+</body>
+</html>`;
+            
+            document.getElementById('cssCode').value = `/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+
+button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+}`;
+            
+            document.getElementById('jsCode').value = `// Interactive JavaScript
+console.log('🚀 JavaScript is running!');
+
+document.querySelector('button').addEventListener('click', function() {
+    this.textContent = 'Clicked! 🎉';
+    console.log('Button was clicked!');
+    
+    setTimeout(() => {
+        this.textContent = 'Click Me';
+    }, 2000);
+});`;
+            
+            switchTab('html');
+            runCode();
+        }
+
+        // Copy Code
+        function copyCode(btn) {
+            const code = btn.closest('.code-block').querySelector('.code-content').textContent;
+            navigator.clipboard.writeText(code);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        }
+
+        // Generate Meta Tags
+        function generateMeta() {
+            const title = document.getElementById('metaTitle').value || 'Page Title';
+            const desc = document.getElementById('metaDesc').value || 'Page description';
+            
+            const output = document.getElementById('metaOutput');
+            output.style.display = 'block';
+            output.querySelector('.code-content').innerHTML = 
+                `<span class="tag">&lt;title&gt;</span>${title}<span class="tag">&lt;/title&gt;</span>\n` +
+                `<span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="string">"description"</span> <span class="attr">content</span>=<span class="string">"${desc}"</span><span class="tag">&gt;</span>\n` +
+                `<span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="string">"og:title"</span> <span class="attr">content</span>=<span class="string">"${title}"</span><span class="tag">&gt;</span>\n` +
+                `<span class="tag">&lt;meta</span> <span class="attr">property</span>=<span class="string">"og:description"</span> <span class="attr">content</span>=<span class="string">"${desc}"</span><span class="tag">&gt;</span>`;
+        }
+
+        // Quiz
+        function checkAnswer(btn, isCorrect) {
+            const parent = btn.closest('.quiz-container');
+            parent.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('correct', 'wrong');
+                opt.disabled = true;
+            });
+            
+            btn.classList.add(isCorrect ? 'correct' : 'wrong');
+            if (!isCorrect) {
+                parent.querySelectorAll('.quiz-option')[1].classList.add('correct');
+            }
+            
+            const feedback = parent.querySelector('.quiz-feedback');
+            feedback.innerHTML = isCorrect ? 
+                '<div style="color: var(--accent);">✅ Correct! The &lt;nav&gt; element is specifically designed for navigation links.</div>' :
+                '<div style="color: var(--danger);">❌ Incorrect. While &lt;header&gt; can contain nav, &lt;nav&gt; is the semantic choice for navigation blocks.</div>';
+            feedback.classList.add('show');
+        }
+
+        // Flexbox Playground
+        let flexState = { direction: 'row', justify: 'flex-start', align: 'stretch', wrap: 'nowrap' };
+        
+        function updateFlex(prop, value) {
+            flexState[prop] = value;
+            const playground = document.getElementById('flexPlayground');
+            playground.style.flexDirection = flexState.direction;
+            playground.style.justifyContent = flexState.justify;
+            playground.style.alignItems = flexState.align;
+            playground.style.flexWrap = flexState.wrap;
+            
+            // Update button states
+            event.target.classList.add('active');
+        }
+
+        // Grid Playground
+        function updateGrid(input, type) {
+            const playground = document.getElementById('gridPlayground');
+            if (type === 'columns') {
+                playground.style.gridTemplateColumns = `repeat(${input.value}, 1fr)`;
+            } else if (type === 'gap') {
+                playground.style.gap = input.value + 'px';
+            }
+        }
+
+        // Animation Studio
+        function playAnimation(type) {
+            const box = document.getElementById('animBox');
+            box.style.animation = 'none';
+            box.offsetHeight; // Trigger reflow
+            
+            const animations = {
+                bounce: 'bounce 1s',
+                shake: 'shake 0.5s',
+                pulse: 'pulse 1s infinite',
+                spin: 'spin 1s linear',
+                flip: 'flip 0.6s'
+            };
+            
+            box.style.animation = animations[type];
+            
+            // Add keyframes dynamically if not exist
+            if (!document.getElementById('animStyles')) {
+                const style = document.createElement('style');
+                style.id = 'animStyles';
+                style.textContent = `
+                    @keyframes bounce {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-30px); }
+                    }
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        25% { transform: translateX(-10px); }
+                        75% { transform: translateX(10px); }
+                    }
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                    }
+                    @keyframes spin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
+                    }
+                    @keyframes flip {
+                        0% { transform: perspective(400px) rotateY(0); }
+                        100% { transform: perspective(400px) rotateY(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Form Preview
+        function updateFormPreview() {
+            const type = document.getElementById('inputType').value;
+            const required = document.getElementById('requiredCheck').checked;
+            const disabled = document.getElementById('disabledCheck').checked;
+            
+            const input = document.createElement('input');
+            input.type = type;
+            input.placeholder = `Enter ${type}...`;
+            if (required) input.required = true;
+            if (disabled) input.disabled = true;
+            input.style.padding = '0.5rem';
+            input.style.borderRadius = '4px';
+            input.style.border = '1px solid #ccc';
+            input.style.width = '100%';
+            
+            const preview = document.getElementById('formPreview');
+            preview.innerHTML = '<label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Preview:</label>';
+            preview.appendChild(input);
+            
+            if (required) {
+                const req = document.createElement('span');
+                req.textContent = ' *Required';
+                req.style.color = '#e34c26';
+                req.style.fontSize = '0.8rem';
+                preview.appendChild(req);
+            }
+        }
+
+        // JS Executor
+        function executeJS() {
+            const code = document.getElementById('jsExecutor').value;
+            const output = document.getElementById('jsOutput');
+            
+            try {
+                // Capture console.log output
+                let logs = [];
+                const mockLog = (...args) => {
+                    logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+                };
+                
+                // Create function with mock console
+                const func = new Function('console', code);
+                func({ log: mockLog, error: mockLog, warn: mockLog });
+                
+                output.innerHTML = logs.length > 0 ? logs.join('<br>') : '<span style="color: #8b949e;">(no output)</span>';
+                output.style.color = '#7ee787';
+            } catch (error) {
+                output.innerHTML = '❌ ' + error.message;
+                output.style.color = '#ff7b72';
+            }
+        }
+
+        // DOM Playground
+        let domOriginal = '';
+        
+        function domAction(action) {
+            const playground = document.getElementById('domPlayground');
+            if (!domOriginal) domOriginal = playground.innerHTML;
+            
+            switch(action) {
+                case 'changeText':
+                    document.getElementById('domTitle').textContent = 'DOM Manipulated! 🎉';
+                    break;
+                case 'addItem':
+                    const list = document.getElementById('domList');
+                    const item = document.createElement('li');
+                    item.textContent = `Item ${list.children.length + 1}`;
+                    list.appendChild(item);
+                    break;
+                case 'toggleClass':
+                    playground.classList.toggle('highlight');
+                    if (playground.classList.contains('highlight')) {
+                        playground.style.background = '#e0e7ff';
+                        playground.style.border = '3px solid #6366f1';
+                    } else {
+                        playground.style.background = 'white';
+                        playground.style.border = 'none';
+                    }
+                    break;
+                case 'changeColor':
+                    playground.style.color = '#6366f1';
+                    break;
+                case 'reset':
+                    playground.innerHTML = domOriginal;
+                    playground.style = '';
+                    break;
+            }
+        }
+
+        // API Fetch Demo
+        async function fetchData(type) {
+            const output = document.getElementById('apiOutput');
+            output.innerHTML = '<div style="text-align: center; padding: 2rem;">Loading...</div>';
+            
+            try {
+                const response = await fetch(`https://jsonplaceholder.typicode.com/${type}?_limit=3`);
+                const data = await response.json();
+                
+                output.innerHTML = data.map(item => `
+                    <div style="background: var(--bg-card); padding: 1rem; margin-bottom: 1rem; border-radius: 8px; border-left: 3px solid var(--primary);">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">${item.title || item.name || 'Item'}</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">
+                            ${item.body || item.email || JSON.stringify(item).slice(0, 100)}...
+                        </p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                output.innerHTML = `<div style="color: var(--danger);">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Initialize
+        updateFormPreview();
+        
+        // Animate stats on load
+        setTimeout(() => {
+            animateValue('stat1', 0, 50, 2000);
+            animateValue('stat2', 0, 120, 2000);
+            animateValue('stat3', 0, 35, 2000);
+        }, 500);
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                obj.textContent = current;
+                if (current == end) clearInterval(timer);
+            }, stepTime);
+        }
+
+        // Typing effect for hero
+        const title = document.getElementById('heroTitle');
+        const text = title.textContent;
+        title.textContent = '';
+        let i = 0;
+        
+        function typeWriter() {
+            if (i < text.length) {
+                title.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+        
+        setTimeout(typeWriter, 300);
+
+        // Create floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = ['{', '}', '</>', '#', '/*', '//', '&&', '||', '=>'][Math.floor(Math.random() * 9)];
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            particle.style.color = ['var(--primary)', 'var(--secondary)', 'var(--accent)'][Math.floor(Math.random() * 3)];
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            document.body.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 20000);
+        }
+
+        setInterval(createParticle, 3000);
+
+        // Run initial code
+        window.addEventListener('load', () => {
+            runCode();
+        });
+    </script>
+</body>
+</html>
